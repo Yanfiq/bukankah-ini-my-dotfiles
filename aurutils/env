@@ -1,0 +1,4 @@
+AURDEST=/srv/aur
+AUR_PACMAN_AUTH=sudo
+AUR_PAGER=ranger
+AUR_REPO=aur

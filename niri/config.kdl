@@ -1,0 +1,462 @@
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// Outputs (example - disabled by default)
+// Run `niri msg outputs` inside a niri session to see connector names and modes.
+// Then edit and uncomment this block to pin a specific monitor layout.
+
+output "eDP-1" {
+    mode "2880x1800@60"
+    scale 1.8
+    position x=0 y=600
+}
+
+output "HDMI-A-1" {
+  mode "2560x1440@60"
+  scale 1
+  // variable-refresh-rate
+  // position x=1600 y=0
+}
+
+// ============================================================================
+// INPUT
+// ============================================================================
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+        repeat-delay 250
+        repeat-rate 50
+    }
+    
+    mouse {
+        accel-profile "adaptive"
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mod-key "Super"
+    mod-key-nested "Alt"
+    focus-follows-mouse max-scroll-amount="10%"
+    warp-mouse-to-focus
+}
+
+// ============================================================================
+// LAYOUT
+// ============================================================================
+
+layout {
+    gaps 7
+    background-color "transparent"
+    center-focused-column "never"
+    
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+    
+    default-column-width { 
+        proportion 0.5
+    }
+    
+    border {
+        off
+        width 4
+        active-color   "#707070"
+        inactive-color "#d0d0d0"
+        urgent-color   "#cc4444"
+    }
+    
+    focus-ring {
+        // off
+        width 3
+        active-color   "#1a99e5"
+        inactive-color "#31313600"
+    }
+    
+    shadow {
+       // off
+        softness 30
+        spread 5
+        offset x=0 y=5
+        color "#0007"
+    }
+    
+    struts { }
+}
+
+gestures {
+    hot-corners {
+        // off
+    }
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 24
+}
+
+overview {
+    zoom 0.3
+
+    // Uncomment to give the overview a solid backdrop between workspaces.
+    //backdrop-color "#777777"
+
+    // Uncomment to disable the workspace shadow in the overview.
+    // workspace-shadow {
+    //    off
+    // }
+}
+
+// ============================================================================
+// WINDOW RULES
+// ============================================================================
+
+blur {
+  passes 2        // more passes = stronger blur (default: 3)
+  offset 3.0      // sample distance per pass (default: 3.0)
+  noise 0.03      // grain overlay (default: 0.02)
+  saturation 1.0  // color saturation boost (default: 1.5)
+}
+
+// Set the overview wallpaper on the backdrop.
+layer-rule {
+  match namespace="^noctalia-backdrop"
+  place-within-backdrop true
+}
+
+window-rule {
+    geometry-corner-radius 7
+    clip-to-geometry true
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+layer-rule {
+  match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+  background-effect {
+    xray false
+    // blur false
+  }
+}
+
+// layer-rule {
+//   match namespace="^noctalia-(background|launcher-overlay|dock)-.*$"
+//   opacity 0.75
+//   background-effect {
+//       xray false
+//   }
+// }
+
+window-rule {
+  match app-id="dev.noctalia.Noctalia"
+  open-floating true
+  default-column-width { fixed 1080; }
+  default-window-height { fixed 920; }
+}
+
+window-rule { 
+    match is-active=false
+    opacity 0.90
+}
+
+window-rule {
+    match app-id="gcr-prompter" title="Unlock Keyring"
+    open-floating true
+    open-focused true
+}
+
+window-rule {
+    match app-id="zen-twilight"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen false
+    open-maximized true
+}
+
+window-rule {
+    match app-id="Requestly"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen false
+    open-maximized true
+}
+
+window-rule {
+    match title="Viewfinder"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen true
+    open-maximized false
+}
+
+window-rule {
+    match app-id=r#"^waydroid\.com"#
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+}
+
+window-rule {
+    match app-id="Zotero" title=r#"^$|Citation Dialog"#
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+
+    min-height 300
+}
+
+window-rule {
+    match app-id=r#"^steam_app_"#
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+}
+
+window-rule {
+    match app-id="helium" title=r#"^Meet"#
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+}
+
+window-rule {
+    match title="Picture in picture"
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+}
+
+window-rule {
+    match app-id="looking-glass-client"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen false
+    open-maximized true
+}
+
+window-rule {
+    match app-id="feh" title="blackout"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen true
+    open-maximized false
+    open-on-output "eDP-1"
+}
+
+window-rule {
+    match app-id="code" title=r#"Google\sChrome\sfor\sTesting$"
+    open-maximized-to-edges false
+    open-floating false
+    open-fullscreen false
+    open-maximized false
+    open-on-output "eDP-1"
+}
+
+window-rule {
+    match app-id=r#"^$"# title=r#"^$"#
+    open-maximized-to-edges false
+    open-floating true
+    open-fullscreen false
+    open-maximized false
+
+    // min-height 300
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+animations {
+    //off
+    workspace-switch {
+        spring damping-ratio=0.92 stiffness=800 epsilon=0.0001
+    }
+    
+    window-open {
+        spring damping-ratio=0.92 stiffness=900 epsilon=0.0001
+    }
+    
+    window-close {
+        spring damping-ratio=0.95 stiffness=1000 epsilon=0.0001
+    }
+    
+    horizontal-view-movement {
+        spring damping-ratio=0.90 stiffness=800 epsilon=0.0001
+    }
+    
+    window-movement {
+        spring damping-ratio=0.96 stiffness=850 epsilon=0.0001
+    }
+}
+
+// ============================================================================
+// ENVIRONMENT
+// ============================================================================
+
+environment {
+    XDG_CURRENT_DESKTOP "niri"
+    QT_QPA_PLATFORM "wayland;xcb"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    XDG_MENU_PREFIX "plasma-"
+    
+    QT_QPA_PLATFORMTHEME "qt6ct"
+    SUDO_ASKPASS "/usr/bin/ksshaskpass"
+}
+
+// ============================================================================
+// STARTUP
+// ============================================================================
+
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
+spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
+// spawn-at-startup "qs" "-c" "noctalia-shell"
+spawn-at-startup "noctalia"
+spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
+//idle
+// spawn-sh-at-startup "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 660 'niri msg action power-off-monitors' resume 'niri msg action power-on-monitors' timeout 900 'systemctl suspend' before-sleep 'qs -c noctalia-shell ipc call sessionMenu lockAndSuspend'"
+// protect oled
+// spawn-sh-at-startup "sh /home/ryanfikri/.config/niri/scripts/__protect_oled.sh &"
+
+// ============================================================================
+// KEYBINDINGS
+// ============================================================================
+
+binds {
+    // System
+    Mod+Tab repeat=false { toggle-overview; }
+    Mod+Shift+E { quit; }
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    // Mod+I { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "settings" "toggle"; }
+    Mod+I { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+L { spawn "noctalia" "msg" "session" "lock"; }
+    // Escape { spawn "noctalia" "msg" "panel-close"; }
+    // Mod+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    // Mod+Super_L repeat=false  { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    // Mod+V { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
+    Mod+V { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    // Ctrl+Mod+R { spawn-sh "pkill -f 'qs -c noctalia-shell'; sleep 2; qs -c noctalia-shell"; }
+    Mod+P repeat=false { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
+
+    // Audio controls
+    // XF86AudioRaiseVolume { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "increase"; }
+    XF86AudioRaiseVolume { spawn "noctalia" "msg" "volume-up"; }
+    // XF86AudioLowerVolume { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "decrease"; }
+    XF86AudioLowerVolume { spawn "noctalia" "msg" "volume-down"; }
+    // XF86AudioMute { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+    XF86AudioMute { spawn "noctalia" "msg" "volume-mute"; }
+
+    // Brightness controls
+    // XF86MonBrightnessUp { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "increase"; }
+    // XF86MonBrightnessDown { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+    XF86MonBrightnessUp { spawn "noctalia" "msg" "brightness-up" "eDP-1"; }
+    XF86MonBrightnessDown { spawn "noctalia" "msg" "brightness-down" "eDP-1"; }
+    
+    // Applications (change "foot" to your preferred terminal)
+    Mod+T { spawn "kitty" "-1"; }
+    Super+E { spawn "dolphin"; }
+    
+    // Window management
+    Mod+D { maximize-column; }
+    Mod+F { fullscreen-window; }
+    Mod+Alt+Space { toggle-window-floating; }
+    Mod+Q { close-window; }
+    // Resize columns
+    Mod+Ctrl+Left  { set-column-width "-10%"; }
+    Mod+Ctrl+Right { set-column-width "+10%"; }
+
+    // Resize windows
+    Mod+Ctrl+Up    { set-window-height "+10%"; }
+    Mod+Ctrl+Down  { set-window-height "-10%"; }
+
+    // Focus
+    Mod+Left { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up { focus-window-up; }
+    Mod+Down { focus-window-down; }
+    // Mod+H { focus-column-left; }
+    // Mod+J { focus-window-down; }
+    // Mod+K { focus-window-up; }
+    // Mod+L { focus-column-right; }
+    Mod+Alt+Left { focus-monitor-left; }
+    Mod+Alt+Right { focus-monitor-right; }
+    
+    // Move windows
+    // Mod+Shift+Left { move-column-left; }
+    // Mod+Shift+Right { move-column-right; }
+    Mod+Shift+Left { consume-or-expel-window-left; }
+    Mod+Shift+Right { consume-or-expel-window-right; }
+    Mod+Shift+Up { move-window-up-or-to-workspace-up; }
+    Mod+Shift+Down { move-window-down-or-to-workspace-down; }
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
+    
+    // Workspaces
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Alt+Up { focus-workspace-up; }
+    Mod+Alt+Down { focus-workspace-down; }
+    Mod+Alt+Shift+Up { move-workspace-up; }
+    Mod+Alt+Shift+Down { move-workspace-down; }
+    Mod+Alt+Shift+Left { move-workspace-to-monitor-previous; }
+    Mod+Alt+Shift+Right { move-workspace-to-monitor-next; }
+    
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    
+    // Screenshots (native)
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+    Mod+Shift+S { screenshot; }
+    
+}
+
+debug {
+  // Allows notification actions and window activation from Noctalia.
+  honor-xdg-activation-with-invalid-serial
+  ignore-drm-device "/dev/dri/renderD129"
+}
+
+// Set the overview wallpaper on the backdrop.
+layer-rule {
+  match namespace="^noctalia-overview*"
+  place-within-backdrop true
+}
+
+include "windows_unbinds_intermediary.kdl"
+
+include "./noctalia.kdl"
+
