@@ -76,12 +76,13 @@ hl.bind(mainMod .. " + SHIFT + down", function ()
 
 --   hl.notification.create({ text = tostring("[" .. at.x .. ", " .. at.y .. "], [" .. size.x .. ", " .. size.y .. "]" .. totalY .. "/" .. max_height), timeout = 5000 })
 end)
--- hl.bind(mainMod .. " + SHIFT + ALT + left", hl.dsp.window.move({ monitor="-1" }))
--- hl.bind(mainMod .. " + SHIFT + ALT + right", hl.dsp.window.move({ monitor="+1" }))
+hl.bind(mainMod .. " + SHIFT + ALT + left", hl.dsp.workspace.move({ monitor="-1" }))
+hl.bind(mainMod .. " + SHIFT + ALT + right", hl.dsp.workspace.move({ monitor="+1" }))
 hl.bind(mainMod .. " + SHIFT + ALT + up", function ()
   local currentWorkspace = hl.get_active_workspace().id
-  local previousWorkspace = currentWorkspace - (hl.get_monitor("HDMI-A-1") and 2 or 1)
-  if currentWorkspace == 1 or currentWorkspace == 2 then return end
+  local isExternalMonitorPluggedIn = hl.get_monitor("HDMI-A-1") and true or false
+  local previousWorkspace = currentWorkspace - (isExternalMonitorPluggedIn and 2 or 1)
+  if currentWorkspace == 1 or (isExternalMonitorPluggedIn and currentWorkspace == 2) then return end
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = previousWorkspace, id = 1000 }))
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = currentWorkspace, id = previousWorkspace }))
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = 1000, id = currentWorkspace }))
@@ -89,7 +90,8 @@ hl.bind(mainMod .. " + SHIFT + ALT + up", function ()
 end)
 hl.bind(mainMod .. " + SHIFT + ALT + down", function ()
   local currentWorkspace = hl.get_active_workspace().id
-  local nextWorkspace = currentWorkspace + (hl.get_monitor("HDMI-A-1") and 2 or 1)
+  local isExternalMonitorPluggedIn = hl.get_monitor("HDMI-A-1") and true or false
+  local nextWorkspace = currentWorkspace + (isExternalMonitorPluggedIn and 2 or 1)
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = nextWorkspace, id = 1000 }))
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = currentWorkspace, id = nextWorkspace }))
   hl.dispatch(hl.dsp.workspace.change_id({ workspace = 1000, id = currentWorkspace }))
@@ -152,8 +154,8 @@ hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
 -- workspaces
-hl.bind(mainMod .. " + ALT + down", hl.dsp.focus({ workspace = "m+1" }))
-hl.bind(mainMod .. " + ALT + up", hl.dsp.focus({ workspace = "m-1" }))
+hl.bind(mainMod .. " + ALT + down", hl.dsp.focus({ workspace = "r+1", on_current_monitor = true }))
+hl.bind(mainMod .. " + ALT + up", hl.dsp.focus({ workspace = "r-1", on_current_monitor = true }))
 
 -- switch monitor's focus
 hl.bind(mainMod .. " + ALT + right", hl.dsp.focus({ monitor = "r" }))
