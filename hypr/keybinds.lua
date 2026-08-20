@@ -14,7 +14,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("dolphin"))
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("wl-mirror $(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name')")) -- quick mirror
 
 hl.bind(mainMod .. " + Tab", function ()
-    hl.plugin.scrolloverview.overview("toggle")
+    hl.plugin.scrolloverview.overview("toggle all")
 end)
 
 -- Window
@@ -104,10 +104,11 @@ end)
 -- hl.bind(mainMod .. " + SHIFT + ALT + down", hl.dsp.window.move({ workspace="r+1" }))
 -- hl.bind(mainMod .. " + CTRL + left", hl.dsp.layout("colresize -0.05"))
 -- hl.bind(mainMod .. " + CTRL + right", hl.dsp.layout("colresize +0.05"))
-hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -100, y = 0, relative = true }))
-hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 100, y = 0, relative = true }))
-hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
-hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
+local scale = hl.get_active_monitor().scale
+hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -100/scale, y = 0, relative = true }))
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 100/scale, y = 0, relative = true }))
+hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = 50/scale, relative = true }))
+hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = -50/scale, relative = true }))
 
 -- noctalia
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
