@@ -14,6 +14,13 @@ local suppressMaximizeRule = hl.window_rule({
 
     suppress_event = "maximize",
 })
+
+-- hl.window_rule({
+--     name  = "no-titlebar-dragging",
+--     match = { class = ".*", float = true },
+
+--     no_xdg_drags = true,
+-- })
 -- suppressMaximizeRule:set_enabled(false)
 
 -- hl.window_rule({
@@ -53,7 +60,9 @@ hl.window_rule({
     match = { title = "blackout" },
 
     monitor = "eDP-1",
-    fullscreen = true
+    fullscreen = true,
+    -- no_initial_focus = true,
+    -- no_anim = true,
 })
 
 hl.window_rule({
