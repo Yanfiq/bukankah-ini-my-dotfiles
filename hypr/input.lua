@@ -28,11 +28,11 @@ hl.config({
     }
 })
 
-hl.gesture({
-    fingers = 3,
-    direction = "vertical",
-    action = "workspace"
-})
+-- hl.gesture({
+--     fingers = 3,
+--     direction = "vertical",
+--     action = "workspace"
+-- })
 
 -- local move_view = function(change)
 --     local natural_change = math.floor(change) * 15
@@ -40,11 +40,11 @@ hl.gesture({
 --     -- hl.notification.create({ text = "move " .. natural_change, timeout = 1000, icon = 1})
 -- end
 
-hl.gesture({
-    fingers = 3,
-    direction = "horizontal",
-    action = "scroll_move"
-})
+-- hl.gesture({
+--     fingers = 3,
+--     direction = "horizontal",
+--     action = "scroll_move"
+-- })
 
 -- hl.gesture({
 --     fingers = 3,
