@@ -6,7 +6,7 @@ require("permissions")
 require("input")
 require("animation")
 require("rules")
-require("subsystem")
+require("custom-behaviour")
 -- require("windows_unbinds_intermediary")
 
 -- For Noctalia Color templates
