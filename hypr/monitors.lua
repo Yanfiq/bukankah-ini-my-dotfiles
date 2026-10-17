@@ -15,3 +15,17 @@ hl.monitor({
     -- cm       = "hdr"
     -- disabled = true
 })
+
+hl.monitor({
+    output   = "VNC-1",
+    mode     = "1920x1080@60",
+    position = "auto",
+    scale    = "1",
+})
+
+hl.monitor({
+    output   = "sunshine-1",
+    mode     = "1920x1080@60",
+    position = "auto",
+    scale    = "1",
+})
