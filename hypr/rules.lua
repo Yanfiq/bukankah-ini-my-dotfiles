@@ -56,14 +56,33 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    name = "protect-oled",
+    name = "bitwarden-extension-float",
+    match = {
+      class = "^chrome-[a-zA-Z0-9-_]+$",
+      title = "Bitwarden",
+    },
+
+    float = true,
+})
+
+hl.window_rule({
+    name = "blackout",
     match = { title = "blackout" },
 
-    monitor = "eDP-1",
-    fullscreen = true,
+    monitor = "eDP-1 silent",
+    -- workspace = "3 silent",
+    -- fullscreen = true,
     -- no_initial_focus = true,
+    -- float = true,
+    -- pin = true,
     -- no_anim = true,
 })
+
+-- hl.on("window.title", function(w)
+--   if w ~= nil and w.title == "blackout" then
+--       hl.dispatch(hl.dsp.window.fullscreen({ action = "set" }))
+--   end
+-- end)
 
 hl.window_rule({
     name = "file-picker-float",
@@ -74,6 +93,25 @@ hl.window_rule({
 
     float = true
 })
+
+hl.window_rule({
+  name = "file-picker-float",
+  match = {
+      class = "org.kde.keditfiletype"
+  },
+
+  float = true
+})
+
+-- hl.window_rule({
+--   name = "fix-audacity4",
+--   match = {
+--       class = "Audacity4",
+--   },
+
+--   float = true,
+--   move = {"(cursor_x-(window_w*0.5))", "(cursor_y-(window_h*0.5))"}
+-- })
 
 hl.window_rule({
     name = "center-every-float",
@@ -117,6 +155,34 @@ hl.on("window.open", function(w)
   end
 end)
 
+-- youtube music floating lyrics
+hl.window_rule({
+    name = "youtube-music-lyrics",
+    match = {
+        class = "helium",
+        title = "^.*\\| YouTube Music$"
+    },
+    float = true,
+    pin = true,
+    border_color = "rgba(00000000)",
+    border_size = 0,
+    decorate = false,
+    -- move to right bottom corner
+    move = {"(monitor_w - window_w - 20)", "(monitor_h - window_h - 20)"}
+})
+
+-- PiP
+hl.window_rule({
+  name = "PiP",
+  match = {
+      title = "Picture in picture"
+  },
+  float = true,
+  pin = true,
+  -- move to right bottom corner
+  move = {"(monitor_w - window_w - 20)", "(monitor_h - window_h - 20)"}
+})
+
 
 hl.layer_rule({
   name = "noctalia",
@@ -129,9 +195,14 @@ hl.layer_rule({
   blur_popups = true,
 })
 hl.window_rule({
-    match = { class = "dev.noctalia.Noctalia" },
+    match = {
+      class = "dev.noctalia.Noctalia",
+      title = "Noctalia Settings",
+    },
     float = true,
     size = { 1080, 920 },
+    -- blur = true,
+    -- ignore_alpha = 0.5,
 })
 -- hl.workspace_rule({ workspace = "1", monitor = "eDP-1", persistent = false })
 -- hl.workspace_rule({ workspace = "3", monitor = "eDP-1", persistent = false })
