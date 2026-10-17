@@ -45,14 +45,14 @@ hl.config({
             enabled = true,
             samples = 7
         },
-
-        -- wobble = {
-        --     enabled = true
-        -- }
     },
 
     xwayland = {
         use_nearest_neighbor = false
+    },
+
+    cursor = {
+        persistent_warps = true
     },
 
     animations = {
@@ -64,8 +64,10 @@ hl.config({
         wrap_focus = false,
         wrap_swapcol = false,
         fullscreen_on_one_column = false,
-        focus_fit_method = 1
+        focus_fit_method = 1,
     },
+
+    -- ["decoration.blur.enabled"] = false
 
 })
 
@@ -81,6 +83,7 @@ if hl.plugin and hl.plugin.scrolloverview then
                 layout = "vertical",
                 wallpaper = 2,
                 blur = true,
+                cross_monitor_drag = true,
                 shadow = {
                     enabled = false,
                     range = 50,
