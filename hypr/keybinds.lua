@@ -15,15 +15,38 @@ hl.bind(mainMod .. " + Tab", function()
     hl.plugin.scrolloverview.overview("toggle all")
 end)
 
--- Window
--- hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
--- hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
+-- window state
+hl.bind(mainMod .. " + ALT + Space", function ()
+    local activeWindow = hl.get_active_window().pid
+    hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+    hl.dispatch(hl.dsp.window.pin({ action = "toggle" }))
+    -- hl.dispatch(hl.dsp.focus({ window = "pid:" .. activeWindow }))
+end)
+hl.bind(mainMod .. " + D", function ()
+    hl.dispatch(hl.dsp.window.fullscreen({mode = "maximized", action = "toggle", layout_aware = true}))
+    hl.dispatch(hl.dsp.window.pin({ action = "disable" }))
+end)
+hl.bind(mainMod .. " + F", function ()
+    hl.dispatch(hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = true }))
+    hl.dispatch(hl.dsp.window.pin({ action = "disable" }))
+end)
+
+-- Window focus
 hl.bind(mainMod .. " + left", function ()
     local window = hl.get_active_window()
     if not window or not window.at then return end
-    local at = window.at and type(window.at) == "table" and window.at or
+    local window_at = window.at and type(window.at) == "table" and window.at or
     type(window.at) == "number" and { x = window.at, y = 0 } or { x = 0, y = 0 }
-    if window.visible and at.x <= 0 then
+
+    local monitor = hl.get_active_monitor()
+    if not monitor or not monitor.position then return end
+    local monitor_at = monitor.position and type(monitor.position) == "table" and monitor.position or
+    type(monitor.position) == "number" and { x = monitor.position, y = 0 } or { x = 0, y = 0 }
+
+    local left_constraint = monitor_at.x + hl.get_config("general.gaps_in").left + hl.get_config("general.border_size") + hl.get_config("general.gaps_out").left
+    -- hl.notification.create({ text = tostring(window_at.x - left_constraint), timeout = 5000 })
+
+    if window.visible and window_at.x - left_constraint < 0 then
         hl.dispatch(hl.dsp.layout("fit_into_view"))
     else
         hl.dispatch(hl.dsp.layout("focus l"))
@@ -46,25 +69,8 @@ hl.bind(mainMod .. " + right", function ()
 end)
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
-hl.bind(mainMod .. " + D",  hl.dsp.window.fullscreen({mode = "maximized", action = "toggle", layout_aware = true}))
--- hl.bind(mainMod .. " + D", function()
---     -- i don't like the default maximized behaviour
---     hl.dispatch(hl.dsp.layout("expel"))
---     local colWidth = hl.get_active_window().size.x
---     local monWidth = hl.get_active_monitor().width
---     local monScale = hl.get_active_monitor().scale
---     local percentage = colWidth / (monWidth / monScale)
---     -- hl.notification.create({ text = tostring(percentage), timeout = 2000 })
---     if percentage >= 0.9 then
---         hl.dispatch(hl.dsp.layout("colresize 0.5"))
---     else
---         hl.dispatch(hl.dsp.layout("colresize 1"))
---     end
--- end)
-hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = true }))
-hl.bind(mainMod .. " + ALT + Space", hl.dsp.window.float({ action = "toggle" }))
 
-
+-- window movement
 hl.bind(mainMod .. " + CTRL + SHIFT + left", hl.dsp.layout("swapcol l"))
 hl.bind(mainMod .. " + CTRL + SHIFT + right", hl.dsp.layout("swapcol r"))
 hl.bind(mainMod .. " + SHIFT + left", function ()
@@ -83,8 +89,6 @@ hl.bind(mainMod .. " + SHIFT + right", function ()
         hl.dispatch(hl.dsp.layout("consume_or_expel next"))
     end
 end)
--- hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.move({ direction = "u" }))
--- hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.move({ direction = "d" }))
 hl.bind(mainMod .. " + SHIFT + up", function()
     local window = hl.get_active_window()
     if not window or not window.at then return end
@@ -103,7 +107,6 @@ hl.bind(mainMod .. " + SHIFT + up", function()
             hl.dispatch(hl.dsp.window.move({ direction = "u" }))
         end
     end
-    -- hl.notification.create({ text = tostring(at.y .. "/" .. constraint), timeout = 5000 })
 end)
 hl.bind(mainMod .. " + SHIFT + down", function()
     local window = hl.get_active_window()
@@ -128,12 +131,18 @@ hl.bind(mainMod .. " + SHIFT + down", function()
             hl.dispatch(hl.dsp.window.move({ direction = "d" }))
         end
     end
-
     -- hl.notification.create({ text = tostring("[" .. at.x .. ", " .. at.y .. "], [" .. size.x .. ", " .. size.y .. "]" .. constraint .. "/" .. max_height), timeout = 5000 })
 end)
-hl.bind(mainMod .. " + SHIFT + ALT + left", hl.dsp.workspace.move({ monitor = "-1" }))
-hl.bind(mainMod .. " + SHIFT + ALT + right", hl.dsp.workspace.move({ monitor = "+1" }))
-hl.bind(mainMod .. " + SHIFT + ALT + up", function()
+hl.bind(mainMod .. " + SHIFT + ALT + left", function ()
+    hl.dispatch(hl.dsp.window.move({ monitor = "-1" }))
+end)
+hl.bind(mainMod .. " + SHIFT + ALT + right", function ()
+    hl.dispatch(hl.dsp.window.move({ monitor = "+1" }))
+end)
+
+hl.bind("SHIFT + ALT + left", hl.dsp.workspace.move({ monitor = "-1" }))
+hl.bind("SHIFT + ALT + right", hl.dsp.workspace.move({ monitor = "+1" }))
+hl.bind("SHIFT + ALT + up", function()
     local currentWorkspace = hl.get_active_workspace().id
     local isExternalMonitorPluggedIn = hl.get_monitor("HDMI-A-1") and true or false
     local previousWorkspace = currentWorkspace - (isExternalMonitorPluggedIn and 2 or 1)
@@ -143,7 +152,7 @@ hl.bind(mainMod .. " + SHIFT + ALT + up", function()
     hl.dispatch(hl.dsp.workspace.change_id({ workspace = 1000, id = currentWorkspace }))
     --   hl.notification.create({ text = tostring("Switched " .. currentWorkspace .. " to workspace " .. previousWorkspace), timeout = 5000 })
 end)
-hl.bind(mainMod .. " + SHIFT + ALT + down", function()
+hl.bind("SHIFT + ALT + down", function()
     local currentWorkspace = hl.get_active_workspace().id
     local isExternalMonitorPluggedIn = hl.get_monitor("HDMI-A-1") and true or false
     local nextWorkspace = currentWorkspace + (isExternalMonitorPluggedIn and 2 or 1)
@@ -191,6 +200,7 @@ hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("noctalia msg panel-toggle launch
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("noctalia msg panel-toggle clipboard"))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("noctalia msg session lock"))
+-- hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
@@ -239,9 +249,9 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 -- workspaces
-hl.bind(mainMod .. " + ALT + down", hl.dsp.focus({ workspace = "r+1", on_current_monitor = true }))
-hl.bind(mainMod .. " + ALT + up", hl.dsp.focus({ workspace = "r-1", on_current_monitor = true }))
+hl.bind("ALT + down", hl.dsp.focus({ workspace = "r+1", on_current_monitor = true }))
+hl.bind("ALT + up", hl.dsp.focus({ workspace = "r-1", on_current_monitor = true }))
 
 -- switch monitor's focus
-hl.bind(mainMod .. " + ALT + right", hl.dsp.focus({ monitor = "r" }))
-hl.bind(mainMod .. " + ALT + left", hl.dsp.focus({ monitor = "l" }))
+hl.bind("ALT + right", hl.dsp.focus({ monitor = "r" }))
+hl.bind("ALT + left", hl.dsp.focus({ monitor = "l" }))
