@@ -4,6 +4,7 @@
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 local utils = require("utils")
+local customDispatch = require("custom-dispatcher")
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for moreTriggerCharacter
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("kitty"))
@@ -34,38 +35,10 @@ end)
 
 -- Window focus
 hl.bind(mainMod .. " + left", function ()
-    local window, window_at = utils.get_active_window_position()
-    local monitor, monitor_at = utils.get_active_monitor_position()
-    if not window or not window_at or not monitor or not monitor_at then return end
-
-    -- pinggir kiri monitor
-    local left_constraint = monitor_at.x
-
-    -- Kalo activewindow gk keliatan full (posisi x negatif karena di luar viewport), fit windownya ke viewport, 
-    if window.visible and window_at.x - left_constraint < 0 then
-        hl.dispatch(hl.dsp.layout("fit_into_view"))
-    else
-        -- else, fokus ke window sebelah kiri
-        hl.dispatch(hl.dsp.layout("focus l"))
-    end
+    customDispatch.focus_window_or_fit_into_view("left")
 end)
 hl.bind(mainMod .. " + right", function ()
-    local window, window_at = utils.get_active_window_position()
-    local _, window_size = utils.get_active_window_size()
-    local monitor, monitor_at = utils.get_active_monitor_position()
-    local _, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
-    if not window or not window_at or not window_size or not monitor or not monitor_at or not monitor_size or not monitor_scale then return end
-
-    -- pinggir kanan monitor
-    local right_constraint = monitor_size.x + monitor_at.x
-    local window_right_edge = window_at.x + window_size.x -- pinggir kanan window
-
-    -- kalo activewindow gk keliatan full (posisi x + size x lebih besar dari pinggir kanan monitor), fit windownya ke viewport,
-    if window.visible and window_right_edge >= right_constraint then
-        hl.dispatch(hl.dsp.layout("fit_into_view"))
-    else
-        hl.dispatch(hl.dsp.layout("focus r"))
-    end
+    customDispatch.focus_window_or_fit_into_view("right")
 end)
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
@@ -89,58 +62,64 @@ hl.bind(mainMod .. " + SHIFT + right", function ()
         hl.dispatch(hl.dsp.layout("consume_or_expel next"))
     end
 end)
+-- hl.bind(mainMod .. " + SHIFT + up", function()
+--     local window, window_at = utils.get_active_window_position()
+--     local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_yand_scale()
+--     local _, monitor_at = utils.get_active_monitor_position()
+--     local border_size = hl.get_config("general.border_size")
+--     local gaps_out = hl.get_config("general.gaps_out").top
+--     if not window or not window_at or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
+
+--     local reserved_top = monitor.reserved.top
+--     local top_constraint = monitor_at.y + reserved_top + gaps_out
+--     local window_top_edge = window_at.y - border_size -- pinggir atas window
+
+--     local isItUpperMost = window_top_edge <= top_constraint
+--     local isItFloating = window.floating
+
+--     -- hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
+
+--     if isItUpperMost then
+--         hl.dispatch(hl.dsp.window.move({ workspace = "r-1" }))
+--     else
+--         if isItFloating then
+--             hl.dispatch(hl.dsp.window.move({ y = -100, x = 0, relative = true }))
+--         else
+--             hl.dispatch(hl.dsp.window.move({ direction = "u" }))
+--         end
+--     end
+-- end)
+-- hl.bind(mainMod .. " + SHIFT + down", function()
+--     local window, window_at = utils.get_active_window_position()
+--     local _, window_size = utils.get_active_window_size()
+--     local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
+--     local _, monitor_at = utils.get_active_monitor_position()
+--     if not window or not window_at or not window_size or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
+
+--     local reserved_top = monitor.reserved.top
+--     local bottom_constraint = monitor_size.y
+--     local window_bottom_edge = window_at.y + window_size.y + reserved_top -- pinggir bawah window
+
+--     local isItLowerMost = window_bottom_edge >= bottom_constraint
+--     local isItFloating = window.floating
+
+--     -- hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
+
+--     if isItLowerMost then
+--         hl.dispatch(hl.dsp.window.move({ workspace = "r+1" }))
+--     else
+--         if isItFloating then
+--             hl.dispatch(hl.dsp.window.move({ y = 100, x = 0, relative = true }))
+--         else
+--             hl.dispatch(hl.dsp.window.move({ direction = "d" }))
+--         end
+--     end
+-- end)
 hl.bind(mainMod .. " + SHIFT + up", function()
-    local window, window_at = utils.get_active_window_position()
-    local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
-    local _, monitor_at = utils.get_active_monitor_position()
-    local border_size = hl.get_config("general.border_size")
-    local gaps_out = hl.get_config("general.gaps_out").top
-    if not window or not window_at or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
-
-    local reserved_top = monitor.reserved.top
-    local top_constraint = monitor_at.y + reserved_top + gaps_out
-    local window_top_edge = window_at.y - border_size -- pinggir atas window
-
-    local isItUpperMost = window_top_edge <= top_constraint
-    local isItFloating = window.floating
-
-    hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
-
-    if isItUpperMost then
-        hl.dispatch(hl.dsp.window.move({ workspace = "r-1" }))
-    else
-        if isItFloating then
-            hl.dispatch(hl.dsp.window.move({ y = -100, x = 0, relative = true }))
-        else
-            hl.dispatch(hl.dsp.window.move({ direction = "u" }))
-        end
-    end
+    customDispatch.move_window_or_move_to_workspace("up")
 end)
 hl.bind(mainMod .. " + SHIFT + down", function()
-    local window, window_at = utils.get_active_window_position()
-    local _, window_size = utils.get_active_window_size()
-    local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
-    local _, monitor_at = utils.get_active_monitor_position()
-    if not window or not window_at or not window_size or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
-
-    local reserved_top = monitor.reserved.top
-    local bottom_constraint = monitor_size.y
-    local window_bottom_edge = window_at.y + window_size.y + reserved_top -- pinggir bawah window
-
-    local isItLowerMost = window_bottom_edge >= bottom_constraint
-    local isItFloating = window.floating
-
-    hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
-
-    if isItLowerMost then
-        hl.dispatch(hl.dsp.window.move({ workspace = "r+1" }))
-    else
-        if isItFloating then
-            hl.dispatch(hl.dsp.window.move({ y = 100, x = 0, relative = true }))
-        else
-            hl.dispatch(hl.dsp.window.move({ direction = "d" }))
-        end
-    end
+    customDispatch.move_window_or_move_to_workspace("down")
 end)
 hl.bind(mainMod .. " + SHIFT + ALT + left", function ()
     hl.dispatch(hl.dsp.window.move({ monitor = "-1" }))
