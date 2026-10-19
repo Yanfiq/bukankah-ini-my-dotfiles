@@ -3,6 +3,7 @@
 ---------------------
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
+local utils = require("utils")
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for moreTriggerCharacter
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("kitty"))
@@ -17,7 +18,7 @@ end)
 
 -- window state
 hl.bind(mainMod .. " + ALT + Space", function ()
-    local activeWindow = hl.get_active_window().pid
+    -- local activeWindow = hl.get_active_window().pid
     hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
     hl.dispatch(hl.dsp.window.pin({ action = "toggle" }))
     -- hl.dispatch(hl.dsp.focus({ window = "pid:" .. activeWindow }))
@@ -33,35 +34,34 @@ end)
 
 -- Window focus
 hl.bind(mainMod .. " + left", function ()
-    local window = hl.get_active_window()
-    if not window or not window.at then return end
-    local window_at = window.at and type(window.at) == "table" and window.at or
-    type(window.at) == "number" and { x = window.at, y = 0 } or { x = 0, y = 0 }
+    local window, window_at = utils.get_active_window_position()
+    local monitor, monitor_at = utils.get_active_monitor_position()
+    if not window or not window_at or not monitor or not monitor_at then return end
 
-    local monitor = hl.get_active_monitor()
-    if not monitor or not monitor.position then return end
-    local monitor_at = monitor.position and type(monitor.position) == "table" and monitor.position or
-    type(monitor.position) == "number" and { x = monitor.position, y = 0 } or { x = 0, y = 0 }
+    -- pinggir kiri monitor
+    local left_constraint = monitor_at.x
 
-    local left_constraint = monitor_at.x + hl.get_config("general.gaps_in").left + hl.get_config("general.border_size") + hl.get_config("general.gaps_out").left
-    -- hl.notification.create({ text = tostring(window_at.x - left_constraint), timeout = 5000 })
-
+    -- Kalo activewindow gk keliatan full (posisi x negatif karena di luar viewport), fit windownya ke viewport, 
     if window.visible and window_at.x - left_constraint < 0 then
         hl.dispatch(hl.dsp.layout("fit_into_view"))
     else
+        -- else, fokus ke window sebelah kiri
         hl.dispatch(hl.dsp.layout("focus l"))
     end
 end)
 hl.bind(mainMod .. " + right", function ()
-    local window = hl.get_active_window()
-    if not window or not window.at then return end
-    local at = window.at and type(window.at) == "table" and window.at or
-    type(window.at) == "number" and { x = window.at, y = 0 } or { x = 0, y = 0 }
-    local size = window.size and type(window.size) == "table" and window.size or
-    type(window.size) == "number" and { x = window.size, y = 0 } or { x = 0, y = 0 }
-    local scale = hl.get_active_monitor().scale
-    local max_width = hl.get_active_monitor().width + hl.get_active_monitor().x
-    if window.visible and at.x * scale + size.x * scale >= max_width then
+    local window, window_at = utils.get_active_window_position()
+    local _, window_size = utils.get_active_window_size()
+    local monitor, monitor_at = utils.get_active_monitor_position()
+    local _, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
+    if not window or not window_at or not window_size or not monitor or not monitor_at or not monitor_size or not monitor_scale then return end
+
+    -- pinggir kanan monitor
+    local right_constraint = monitor_size.x + monitor_at.x
+    local window_right_edge = window_at.x + window_size.x -- pinggir kanan window
+
+    -- kalo activewindow gk keliatan full (posisi x + size x lebih besar dari pinggir kanan monitor), fit windownya ke viewport,
+    if window.visible and window_right_edge >= right_constraint then
         hl.dispatch(hl.dsp.layout("fit_into_view"))
     else
         hl.dispatch(hl.dsp.layout("focus r"))
@@ -90,14 +90,22 @@ hl.bind(mainMod .. " + SHIFT + right", function ()
     end
 end)
 hl.bind(mainMod .. " + SHIFT + up", function()
-    local window = hl.get_active_window()
-    if not window or not window.at then return end
-    local at = window.at and type(window.at) == "table" and window.at or
-    type(window.at) == "number" and { x = window.at, y = 0 } or { x = 0, y = 0 }
-    local constraint = hl.get_active_monitor().y + hl.get_config("general.gaps_in").top +
-    hl.get_config("general.border_size") + hl.get_active_monitor().reserved.top
-    local isItUpperMost = at.y <= constraint
+    local window, window_at = utils.get_active_window_position()
+    local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
+    local _, monitor_at = utils.get_active_monitor_position()
+    local border_size = hl.get_config("general.border_size")
+    local gaps_out = hl.get_config("general.gaps_out").top
+    if not window or not window_at or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
+
+    local reserved_top = monitor.reserved.top
+    local top_constraint = monitor_at.y + reserved_top + gaps_out
+    local window_top_edge = window_at.y - border_size -- pinggir atas window
+
+    local isItUpperMost = window_top_edge <= top_constraint
     local isItFloating = window.floating
+
+    hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
+
     if isItUpperMost then
         hl.dispatch(hl.dsp.window.move({ workspace = "r-1" }))
     else
@@ -109,19 +117,21 @@ hl.bind(mainMod .. " + SHIFT + up", function()
     end
 end)
 hl.bind(mainMod .. " + SHIFT + down", function()
-    local window = hl.get_active_window()
-    if not window or not window.at then return end
-    local at = window.at and type(window.at) == "table" and window.at or
-    type(window.at) == "number" and { x = window.at, y = 0 } or { x = 0, y = 0 }
-    local size = window.size and type(window.size) == "table" and window.size or
-    type(window.size) == "number" and { x = window.size, y = 0 } or { x = 0, y = 0 }
-    local scale = hl.get_active_monitor().scale
-    local max_height = hl.get_active_monitor().height + hl.get_active_monitor().y
-    local constraint = at.y * scale + size.y * scale + hl.get_config("general.gaps_in").top * scale +
-    hl.get_config("general.gaps_in").bottom * scale + hl.get_config("general.border_size") * scale +
-    hl.get_active_monitor().reserved.top * scale
-    local isItLowerMost = constraint >= max_height
+    local window, window_at = utils.get_active_window_position()
+    local _, window_size = utils.get_active_window_size()
+    local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
+    local _, monitor_at = utils.get_active_monitor_position()
+    if not window or not window_at or not window_size or not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
+
+    local reserved_top = monitor.reserved.top
+    local bottom_constraint = monitor_size.y
+    local window_bottom_edge = window_at.y + window_size.y + reserved_top -- pinggir bawah window
+
+    local isItLowerMost = window_bottom_edge >= bottom_constraint
     local isItFloating = window.floating
+
+    hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
+
     if isItLowerMost then
         hl.dispatch(hl.dsp.window.move({ workspace = "r+1" }))
     else
@@ -131,7 +141,6 @@ hl.bind(mainMod .. " + SHIFT + down", function()
             hl.dispatch(hl.dsp.window.move({ direction = "d" }))
         end
     end
-    -- hl.notification.create({ text = tostring("[" .. at.x .. ", " .. at.y .. "], [" .. size.x .. ", " .. size.y .. "]" .. constraint .. "/" .. max_height), timeout = 5000 })
 end)
 hl.bind(mainMod .. " + SHIFT + ALT + left", function ()
     hl.dispatch(hl.dsp.window.move({ monitor = "-1" }))
