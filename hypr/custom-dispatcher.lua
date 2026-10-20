@@ -85,7 +85,19 @@ local function move_window_or_move_to_workspace(direction)
     end
 end
 
+local function swap_adjacent_workspaces(direction)
+    local current_workspace = hl.get_active_workspace().id
+    local is_external_monitor_exist = hl.get_monitor("HDMI-A-1") and true or false
+    local target_workspace = direction == "prev" and current_workspace - (is_external_monitor_exist and 2 or 1) or current_workspace + (is_external_monitor_exist and 2 or 1)
+
+    if target_workspace < 1 then return end
+
+    hl.dispatch(hl.dsp.workspace.change_id({ workspace = target_workspace, id = 1000 }))
+    hl.dispatch(hl.dsp.workspace.change_id({ workspace = current_workspace, id = target_workspace }))
+    hl.dispatch(hl.dsp.workspace.change_id({ workspace = 1000, id = current_workspace }))
+end
+
 M.focus_window_or_fit_into_view = focus_window_or_fit_into_view
 M.move_window_or_move_to_workspace = move_window_or_move_to_workspace
-
+M.swap_adjacent_workspaces = swap_adjacent_workspaces
 return M
