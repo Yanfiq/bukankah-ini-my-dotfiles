@@ -50,7 +50,7 @@ local function move_window_or_move_to_workspace(direction)
         local top_constraint = monitor_at.y + reserved_top + gaps_out_top + utils.get_monitor_dependent_tollerance() -- pinggir atas monitor
         local window_top_edge = window_at.y - border_size -- pinggir atas window
     
-        hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
+        -- hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
     
         if window_top_edge <= top_constraint then
             hl.dispatch(hl.dsp.window.move({ workspace = "r-1" }))
@@ -66,7 +66,7 @@ local function move_window_or_move_to_workspace(direction)
         local bottom_constraint = monitor_size.y + monitor_at.y - gaps_out_bottom - reserved_bottom - utils.get_monitor_dependent_tollerance() -- pinggir bawah monitor
         local window_bottom_edge = window_at.y + window_size.y + border_size -- pinggir bawah window
 
-        hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
+        -- hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
     
         if window_bottom_edge >= bottom_constraint then
             hl.dispatch(hl.dsp.window.move({ workspace = "r+1" }))
