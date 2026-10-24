@@ -204,16 +204,6 @@ hl.window_rule({
     -- blur = true,
     -- ignore_alpha = 0.5,
 })
--- hl.workspace_rule({ workspace = "1", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "3", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "5", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "7", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "9", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "4", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "6", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "8", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "10", monitor = "HDMI-A-1", persistent = false })
 
 for i = 1, 100 do
   local odd = i % 2 == 1
@@ -223,14 +213,3 @@ for i = 1, 100 do
     hl.workspace_rule({ workspace = tostring(i), monitor = "HDMI-A-1", persistent = false })
   end
 end
-
--- hl.workspace_rule({ workspace = "11", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "13", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "8", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "9", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "10", monitor = "eDP-1", persistent = false })
--- hl.workspace_rule({ workspace = "16", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "17", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "18", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "19", monitor = "HDMI-A-1", persistent = false })
--- hl.workspace_rule({ workspace = "20", monitor = "HDMI-A-1", persistent = false })
