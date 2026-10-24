@@ -40,43 +40,38 @@ local function move_window_or_move_to_workspace(direction)
     local monitor, monitor_size, monitor_scale = utils.get_active_monitor_size_and_scale()
     local _, monitor_at = utils.get_active_monitor_position()
     local border_size = hl.get_config("general.border_size")
-    local gaps_out = hl.get_config("general.gaps_out").top
+    local gaps_out_top = hl.get_config("general.gaps_out").top
+    local gaps_out_bottom = hl.get_config("general.gaps_out").bottom
     if not window or not window_size or not window_at then return end
     if not monitor or not monitor_size or not monitor_scale or not monitor_at then return end
 
     if direction == "up" then
         local reserved_top = monitor.reserved.top
-        local top_constraint = monitor_at.y + reserved_top + gaps_out
+        local top_constraint = monitor_at.y + reserved_top + gaps_out_top + utils.get_monitor_dependent_tollerance() -- pinggir atas monitor
         local window_top_edge = window_at.y - border_size -- pinggir atas window
     
-        local isItUpperMost = window_top_edge <= top_constraint
-        local isItFloating = window.floating
+        hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
     
-        -- hl.notification.create({ text = tostring(window_top_edge .. " | " .. top_constraint), timeout = 5000, icon = "ok" })
-    
-        if isItUpperMost then
+        if window_top_edge <= top_constraint then
             hl.dispatch(hl.dsp.window.move({ workspace = "r-1" }))
         else
-            if isItFloating then
+            if window.floating then
                 hl.dispatch(hl.dsp.window.move({ y = -100, x = 0, relative = true }))
             else
                 hl.dispatch(hl.dsp.window.move({ direction = "u" }))
             end
         end
     elseif direction == "down" then
-        local reserved_top = monitor.reserved.top
-        local bottom_constraint = monitor_size.y
-        local window_bottom_edge = window_at.y + window_size.y + reserved_top -- pinggir bawah window
+        local reserved_bottom = monitor.reserved.bottom
+        local bottom_constraint = monitor_size.y + monitor_at.y - gaps_out_bottom - reserved_bottom - utils.get_monitor_dependent_tollerance() -- pinggir bawah monitor
+        local window_bottom_edge = window_at.y + window_size.y + border_size -- pinggir bawah window
 
-        local isItLowerMost = window_bottom_edge >= bottom_constraint
-        local isItFloating = window.floating
+        hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
     
-        -- hl.notification.create({ text = tostring(window_bottom_edge .. " | " .. bottom_constraint), timeout = 5000, icon = "ok" })
-    
-        if isItLowerMost then
+        if window_bottom_edge >= bottom_constraint then
             hl.dispatch(hl.dsp.window.move({ workspace = "r+1" }))
         else
-            if isItFloating then
+            if window.floating then
                 hl.dispatch(hl.dsp.window.move({ y = 100, x = 0, relative = true }))
             else
                 hl.dispatch(hl.dsp.window.move({ direction = "d" }))
