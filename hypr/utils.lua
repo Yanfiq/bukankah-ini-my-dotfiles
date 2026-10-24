@@ -56,8 +56,8 @@ local function get_active_monitor_size_and_scale()
     if not monitor then return nil end
 
     local size = {
-        x = monitor.x,
-        y = monitor.y
+        x = monitor.width / monitor.scale,
+        y = monitor.height / monitor.scale
     }
 
     return monitor, size, monitor.scale
