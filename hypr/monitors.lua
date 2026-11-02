@@ -4,6 +4,8 @@ hl.monitor({
     mode     = "2560x1440@144",
     position = "auto",
     scale    = "auto",
+    cm       = "dcip3",
+    supports_hdr = -1
 })
 
 hl.monitor({
