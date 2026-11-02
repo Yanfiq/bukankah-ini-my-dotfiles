@@ -75,10 +75,10 @@ hl.bind(mainMod .. " + SHIFT + ALT + right", function ()
     hl.dispatch(hl.dsp.window.move({ monitor = "+1" }))
 end)
 
-hl.bind("SHIFT + ALT + left", hl.dsp.workspace.move({ monitor = "-1" }))
-hl.bind("SHIFT + ALT + right", hl.dsp.workspace.move({ monitor = "+1" }))
-hl.bind("SHIFT + ALT + up", function() customDispatch.swap_adjacent_workspaces("prev") end)
-hl.bind("SHIFT + ALT + down", function() customDispatch.swap_adjacent_workspaces("next") end)
+hl.bind("ALT + SHIFT + left", function() customDispatch.swap_adjacent_workspaces("left") end)
+hl.bind("ALT + SHIFT + right", function() customDispatch.swap_adjacent_workspaces("right") end)
+hl.bind("ALT + SHIFT + up", function() customDispatch.swap_adjacent_workspaces("up") end)
+hl.bind("ALT + SHIFT + down", function() customDispatch.swap_adjacent_workspaces("down") end)
 
 -- hl.bind(mainMod .. " + CTRL + left", hl.dsp.layout("colresize -0.05"))
 -- hl.bind(mainMod .. " + CTRL + right", hl.dsp.layout("colresize +0.05"))
@@ -115,6 +115,27 @@ end
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+-- hl.bind(mainMod .. " + mouse:272", function()
+--     local window = hl.get_active_window()
+--     if not window then return end
+--     local window_state = window.floating and "floating" or window.fullscreen == 1 and "maximized" or window.fullscreen == 2 and "fullscreen" or "tiled"
+--     if window ~= nil then
+--         hl.dispatch(hl.dsp.window.float({ action = "enable" }))
+--         hl.dispatch(hl.dsp.window.drag())
+
+--         if window_state == "floating" then
+--             hl.dispatch(hl.dsp.window.float({ action = "enable" }))
+--         elseif window_state == "maximized" then
+--             hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "set", layout_aware = true }))
+--         elseif window_state == "fullscreen" then
+--             hl.dispatch(hl.dsp.window.fullscreen({ mode = "fullscreen", action = "set", layout_aware = true }))
+--         end
+--     end
+-- end, {
+--     mouse = true,
+--     non_consuming = true
+-- })
+
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Laptop multimedia keys for volume and LCD brightness
@@ -138,7 +159,14 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 
 -- switch workspace's focus
 hl.bind("ALT + down", hl.dsp.focus({ workspace = "r+1", on_current_monitor = true }))
-hl.bind("ALT + up", hl.dsp.focus({ workspace = "r-1", on_current_monitor = true }))
+hl.bind("ALT + up", function ()
+    local isExternalMonitorExist = hl.get_monitor("HDMI-A-1") and true or false
+    local currentWorkspace = hl.get_active_workspace().id
+
+    -- workaround for a bug
+    if currentWorkspace == 2 and isExternalMonitorExist then return end
+    hl.dispatch(hl.dsp.focus({ workspace = "r-1", on_current_monitor = true }))
+end)
 
 -- switch monitor's focus
 hl.bind("ALT + right", hl.dsp.focus({ monitor = "r" }))

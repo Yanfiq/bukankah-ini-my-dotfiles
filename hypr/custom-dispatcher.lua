@@ -83,9 +83,29 @@ end
 local function swap_adjacent_workspaces(direction)
     local current_workspace = hl.get_active_workspace().id
     local is_external_monitor_exist = hl.get_monitor("HDMI-A-1") and true or false
-    local target_workspace = direction == "prev" and current_workspace - (is_external_monitor_exist and 2 or 1) or current_workspace + (is_external_monitor_exist and 2 or 1)
 
-    if target_workspace < 1 then return end
+    local target_workspace =
+        direction == "up" and current_workspace - (is_external_monitor_exist and 2 or 1)
+        or direction == "down" and current_workspace + (is_external_monitor_exist and 2 or 1)
+    if target_workspace and target_workspace < 1 then return end
+
+    if is_external_monitor_exist and direction == "left" or direction == "right" then
+        local active_monitor = hl.get_active_monitor()
+        if not active_monitor then return end
+    
+        local inactive_monitor = active_monitor.name == "HDMI-A-1" and hl.get_monitor("eDP-1") or hl.get_monitor("HDMI-A-1")
+        if not inactive_monitor then return end
+
+        target_workspace = inactive_monitor.active_workspace.id
+
+        -- move workspace
+        hl.dispatch(hl.dsp.workspace.move({ workspace = current_workspace, monitor = inactive_monitor.name }))
+        hl.dispatch(hl.dsp.workspace.move({ workspace = target_workspace, monitor = active_monitor.name }))
+
+        -- refocus
+        hl.dispatch(hl.dsp.focus({ workspace = current_workspace }))
+        hl.dispatch(hl.dsp.focus({ workspace = target_workspace }))
+    end
 
     hl.dispatch(hl.dsp.workspace.change_id({ workspace = target_workspace, id = 1000 }))
     hl.dispatch(hl.dsp.workspace.change_id({ workspace = current_workspace, id = target_workspace }))
