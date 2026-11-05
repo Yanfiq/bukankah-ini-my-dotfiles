@@ -1,5 +1,6 @@
 hl.on("window.active", function(w)
   -- hl.notification.create({ text = "Window focused: " .. w.class, timeout = 5000, icon = "ok" })
+  if not w or not w.class then return end
   if w.class == "looking-glass-client" then
 
     hl.unbind("SUPER + E")
